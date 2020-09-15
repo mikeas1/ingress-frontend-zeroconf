@@ -7,14 +7,14 @@ jobs:
         runs-on: ubuntu-latest
         steps:
         - name: checkout code
-            uses: actions/checkout@v2
+          uses: actions/checkout@v2
         - name: install buildx
-            id: buildx
-            uses: crazy-max/ghaction-docker-buildx@v1
-            with:
-            version: latest
+          id: buildx
+          uses: crazy-max/ghaction-docker-buildx@v1
+          with:
+          version: latest
         - name: build the image
-        run: |
+          run: |
             docker buildx build \
-            --tag your-mikeas1/ingress-frontend-zeroconf \
+            --tag mikeas1/ingress-frontend-zeroconf \
             --platform linux/amd64,linux/arm/v7,linux/arm64 .
