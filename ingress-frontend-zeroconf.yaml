@@ -54,9 +54,7 @@ spec:
       terminationGracePeriodSeconds: 60
       containers:
       - name: ingress-frontend-zeroconf
-        image: andsens/ingress-frontend-zeroconf
-        args:
-        - --service=traefik-ingress-service.kube-system
+        image: mikeas1/ingress-frontend-zeroconf
         securityContext:
           readOnlyRootFilesystem: true
         volumeMounts:
