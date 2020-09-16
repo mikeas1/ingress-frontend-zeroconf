@@ -12,7 +12,7 @@ import (
 	"time"
 
 	v1 "k8s.io/api/core/v1"
-	v1beta1 "k8s.io/api/extensions/v1beta1"
+	v1beta1 "k8s.io/api/networking/v1beta1"
 	"k8s.io/apimachinery/pkg/fields"
 
 	docopt "github.com/docopt/docopt-go"
@@ -67,18 +67,22 @@ Options:
 
 	var zeroconfServers = map[LocalHostname]*zeroconf.Server{}
 	defer unregisterAllHostnames(zeroconfServers)
-	watcher := cache.NewListWatchFromClient(clientset.ExtensionsV1beta1().RESTClient(), "ingresses", v1.NamespaceAll, fields.Everything())
+
+	watcher := cache.NewListWatchFromClient(clientset.NetworkingV1beta1().RESTClient(), "ingresses", v1.NamespaceAll, fields.Everything())
 	log.Debugf("Watching ingresses")
 	_, controller := cache.NewInformer(watcher, &v1beta1.Ingress{}, time.Second*30, cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
+			log.Debugf("Got new ingress:\n%+v", obj)
 			hostnames, ingressIP := getIngressHostnames(obj.(*v1beta1.Ingress))
 			registerHostnames(hostnames, broadcastInterface, ingressIP, zeroconfServers)
 		},
 		DeleteFunc: func(obj interface{}) {
+			log.Debugf("Got removed ingress:\n%+v", obj)
 			hostnames, _ := getIngressHostnames(obj.(*v1beta1.Ingress))
 			unregisterHostnames(hostnames, zeroconfServers)
 		},
 		UpdateFunc: func(oldObj interface{}, newObj interface{}) {
+			log.Debugf("Got updated ingress")
 			oldIngress := oldObj.(*v1beta1.Ingress)
 			newIngress := oldObj.(*v1beta1.Ingress)
 			oldHostnames, _ := getIngressHostnames(oldIngress)

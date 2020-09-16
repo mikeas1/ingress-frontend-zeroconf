@@ -33,13 +33,12 @@ subjects:
   namespace: kube-system
 ---
 kind: Deployment
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 metadata:
   name: ingress-frontend-zeroconf
   namespace: kube-system
 spec:
   replicas: 1
-  template:
   selector:
     matchLabels:
       name: ingress-frontend-zeroconf
